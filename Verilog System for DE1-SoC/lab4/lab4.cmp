@@ -1,0 +1,147 @@
+	component lab4 is
+		port (
+			clk_65_clk                         : out   std_logic;                                        -- clk
+			clocked_video_export_vid_clk       : in    std_logic                     := 'X';             -- vid_clk
+			clocked_video_export_vid_data      : out   std_logic_vector(31 downto 0);                    -- vid_data
+			clocked_video_export_underflow     : out   std_logic;                                        -- underflow
+			clocked_video_export_vid_datavalid : out   std_logic;                                        -- vid_datavalid
+			clocked_video_export_vid_v_sync    : out   std_logic;                                        -- vid_v_sync
+			clocked_video_export_vid_h_sync    : out   std_logic;                                        -- vid_h_sync
+			clocked_video_export_vid_f         : out   std_logic;                                        -- vid_f
+			clocked_video_export_vid_h         : out   std_logic;                                        -- vid_h
+			clocked_video_export_vid_v         : out   std_logic;                                        -- vid_v
+			done2_export                       : in    std_logic_vector(6 downto 0)  := (others => 'X'); -- export
+			done3_export                       : in    std_logic                     := 'X';             -- export
+			done_to_hps_export                 : in    std_logic_vector(6 downto 0)  := (others => 'X'); -- export
+			hps_0_h2f_reset_reset_n            : out   std_logic;                                        -- reset_n
+			hps_io_hps_io_sdio_inst_CMD        : inout std_logic                     := 'X';             -- hps_io_sdio_inst_CMD
+			hps_io_hps_io_sdio_inst_D0         : inout std_logic                     := 'X';             -- hps_io_sdio_inst_D0
+			hps_io_hps_io_sdio_inst_D1         : inout std_logic                     := 'X';             -- hps_io_sdio_inst_D1
+			hps_io_hps_io_sdio_inst_CLK        : out   std_logic;                                        -- hps_io_sdio_inst_CLK
+			hps_io_hps_io_sdio_inst_D2         : inout std_logic                     := 'X';             -- hps_io_sdio_inst_D2
+			hps_io_hps_io_sdio_inst_D3         : inout std_logic                     := 'X';             -- hps_io_sdio_inst_D3
+			hps_io_hps_io_usb1_inst_D0         : inout std_logic                     := 'X';             -- hps_io_usb1_inst_D0
+			hps_io_hps_io_usb1_inst_D1         : inout std_logic                     := 'X';             -- hps_io_usb1_inst_D1
+			hps_io_hps_io_usb1_inst_D2         : inout std_logic                     := 'X';             -- hps_io_usb1_inst_D2
+			hps_io_hps_io_usb1_inst_D3         : inout std_logic                     := 'X';             -- hps_io_usb1_inst_D3
+			hps_io_hps_io_usb1_inst_D4         : inout std_logic                     := 'X';             -- hps_io_usb1_inst_D4
+			hps_io_hps_io_usb1_inst_D5         : inout std_logic                     := 'X';             -- hps_io_usb1_inst_D5
+			hps_io_hps_io_usb1_inst_D6         : inout std_logic                     := 'X';             -- hps_io_usb1_inst_D6
+			hps_io_hps_io_usb1_inst_D7         : inout std_logic                     := 'X';             -- hps_io_usb1_inst_D7
+			hps_io_hps_io_usb1_inst_CLK        : in    std_logic                     := 'X';             -- hps_io_usb1_inst_CLK
+			hps_io_hps_io_usb1_inst_STP        : out   std_logic;                                        -- hps_io_usb1_inst_STP
+			hps_io_hps_io_usb1_inst_DIR        : in    std_logic                     := 'X';             -- hps_io_usb1_inst_DIR
+			hps_io_hps_io_usb1_inst_NXT        : in    std_logic                     := 'X';             -- hps_io_usb1_inst_NXT
+			hps_io_hps_io_uart0_inst_RX        : in    std_logic                     := 'X';             -- hps_io_uart0_inst_RX
+			hps_io_hps_io_uart0_inst_TX        : out   std_logic;                                        -- hps_io_uart0_inst_TX
+			layer1_control_done                : out   std_logic_vector(6 downto 0);                     -- done
+			layer1_control_ready               : in    std_logic                     := 'X';             -- ready
+			layer1_control_state               : out   std_logic_vector(3 downto 0);                     -- state
+			layer2_control_done                : out   std_logic_vector(6 downto 0);                     -- done
+			layer2_control_ready               : in    std_logic_vector(6 downto 0)  := (others => 'X'); -- ready
+			layer2_control_state               : out   std_logic_vector(3 downto 0);                     -- state
+			layer3_control_done                : out   std_logic;                                        -- done
+			layer3_control_ready               : in    std_logic_vector(6 downto 0)  := (others => 'X'); -- ready
+			layer3_control_state               : out   std_logic_vector(3 downto 0);                     -- state
+			led_export_export                  : out   std_logic_vector(9 downto 0);                     -- export
+			memory_mem_a                       : out   std_logic_vector(14 downto 0);                    -- mem_a
+			memory_mem_ba                      : out   std_logic_vector(2 downto 0);                     -- mem_ba
+			memory_mem_ck                      : out   std_logic;                                        -- mem_ck
+			memory_mem_ck_n                    : out   std_logic;                                        -- mem_ck_n
+			memory_mem_cke                     : out   std_logic;                                        -- mem_cke
+			memory_mem_cs_n                    : out   std_logic;                                        -- mem_cs_n
+			memory_mem_ras_n                   : out   std_logic;                                        -- mem_ras_n
+			memory_mem_cas_n                   : out   std_logic;                                        -- mem_cas_n
+			memory_mem_we_n                    : out   std_logic;                                        -- mem_we_n
+			memory_mem_reset_n                 : out   std_logic;                                        -- mem_reset_n
+			memory_mem_dq                      : inout std_logic_vector(31 downto 0) := (others => 'X'); -- mem_dq
+			memory_mem_dqs                     : inout std_logic_vector(3 downto 0)  := (others => 'X'); -- mem_dqs
+			memory_mem_dqs_n                   : inout std_logic_vector(3 downto 0)  := (others => 'X'); -- mem_dqs_n
+			memory_mem_odt                     : out   std_logic;                                        -- mem_odt
+			memory_mem_dm                      : out   std_logic_vector(3 downto 0);                     -- mem_dm
+			memory_oct_rzqin                   : in    std_logic                     := 'X';             -- oct_rzqin
+			ready2_export                      : out   std_logic_vector(6 downto 0);                     -- export
+			ready3_export                      : out   std_logic_vector(6 downto 0);                     -- export
+			ready_from_hps_export              : out   std_logic;                                        -- export
+			s1_l1_s1_adr                       : out   std_logic_vector(16 downto 0);                    -- s1_adr
+			s1_l1_s1_d                         : out   std_logic_vector(7 downto 0);                     -- s1_d
+			s1_l1_s1_q                         : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- s1_q
+			s1_l1_s1_cs                        : out   std_logic;                                        -- s1_cs
+			s1_l1_s1_w                         : out   std_logic;                                        -- s1_w
+			s1_l2_s1_adr                       : out   std_logic_vector(15 downto 0);                    -- s1_adr
+			s1_l2_s1_d                         : out   std_logic_vector(7 downto 0);                     -- s1_d
+			s1_l2_s1_q                         : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- s1_q
+			s1_l2_s1_cs                        : out   std_logic;                                        -- s1_cs
+			s1_l2_s1_w                         : out   std_logic;                                        -- s1_w
+			s1_l3_s1_adr                       : out   std_logic_vector(10 downto 0);                    -- s1_adr
+			s1_l3_s1_d                         : out   std_logic_vector(7 downto 0);                     -- s1_d
+			s1_l3_s1_q                         : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- s1_q
+			s1_l3_s1_cs                        : out   std_logic;                                        -- s1_cs
+			s1_l3_s1_w                         : out   std_logic;                                        -- s1_w
+			s1_m1_address                      : in    std_logic_vector(16 downto 0) := (others => 'X'); -- address
+			s1_m1_clken                        : in    std_logic                     := 'X';             -- clken
+			s1_m1_chipselect                   : in    std_logic                     := 'X';             -- chipselect
+			s1_m1_write                        : in    std_logic                     := 'X';             -- write
+			s1_m1_readdata                     : out   std_logic_vector(7 downto 0);                     -- readdata
+			s1_m1_writedata                    : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- writedata
+			s1_m2_address                      : in    std_logic_vector(15 downto 0) := (others => 'X'); -- address
+			s1_m2_clken                        : in    std_logic                     := 'X';             -- clken
+			s1_m2_chipselect                   : in    std_logic                     := 'X';             -- chipselect
+			s1_m2_write                        : in    std_logic                     := 'X';             -- write
+			s1_m2_readdata                     : out   std_logic_vector(7 downto 0);                     -- readdata
+			s1_m2_writedata                    : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- writedata
+			s1_m3_address                      : in    std_logic_vector(10 downto 0) := (others => 'X'); -- address
+			s1_m3_clken                        : in    std_logic                     := 'X';             -- clken
+			s1_m3_chipselect                   : in    std_logic                     := 'X';             -- chipselect
+			s1_m3_write                        : in    std_logic                     := 'X';             -- write
+			s1_m3_readdata                     : out   std_logic_vector(7 downto 0);                     -- readdata
+			s1_m3_writedata                    : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- writedata
+			s2_l1_s2_adr                       : out   std_logic_vector(16 downto 0);                    -- s2_adr
+			s2_l1_s2_d                         : out   std_logic_vector(7 downto 0);                     -- s2_d
+			s2_l1_s2_q                         : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- s2_q
+			s2_l1_s2_cs                        : out   std_logic;                                        -- s2_cs
+			s2_l1_s2_w                         : out   std_logic;                                        -- s2_w
+			s2_l2_s2_adr                       : out   std_logic_vector(15 downto 0);                    -- s2_adr
+			s2_l2_s2_d                         : out   std_logic_vector(7 downto 0);                     -- s2_d
+			s2_l2_s2_q                         : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- s2_q
+			s2_l2_s2_cs                        : out   std_logic;                                        -- s2_cs
+			s2_l2_s2_w                         : out   std_logic;                                        -- s2_w
+			s2_l3_s2_adr                       : out   std_logic_vector(10 downto 0);                    -- s2_adr
+			s2_l3_s2_d                         : out   std_logic_vector(7 downto 0);                     -- s2_d
+			s2_l3_s2_q                         : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- s2_q
+			s2_l3_s2_cs                        : out   std_logic;                                        -- s2_cs
+			s2_l3_s2_w                         : out   std_logic;                                        -- s2_w
+			s2_m1_address                      : in    std_logic_vector(16 downto 0) := (others => 'X'); -- address
+			s2_m1_chipselect                   : in    std_logic                     := 'X';             -- chipselect
+			s2_m1_clken                        : in    std_logic                     := 'X';             -- clken
+			s2_m1_write                        : in    std_logic                     := 'X';             -- write
+			s2_m1_readdata                     : out   std_logic_vector(7 downto 0);                     -- readdata
+			s2_m1_writedata                    : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- writedata
+			s2_m2_address                      : in    std_logic_vector(15 downto 0) := (others => 'X'); -- address
+			s2_m2_chipselect                   : in    std_logic                     := 'X';             -- chipselect
+			s2_m2_clken                        : in    std_logic                     := 'X';             -- clken
+			s2_m2_write                        : in    std_logic                     := 'X';             -- write
+			s2_m2_readdata                     : out   std_logic_vector(7 downto 0);                     -- readdata
+			s2_m2_writedata                    : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- writedata
+			s2_m3_address                      : in    std_logic_vector(10 downto 0) := (others => 'X'); -- address
+			s2_m3_chipselect                   : in    std_logic                     := 'X';             -- chipselect
+			s2_m3_clken                        : in    std_logic                     := 'X';             -- clken
+			s2_m3_write                        : in    std_logic                     := 'X';             -- write
+			s2_m3_readdata                     : out   std_logic_vector(7 downto 0);                     -- readdata
+			s2_m3_writedata                    : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- writedata
+			sdram_clk_clk                      : out   std_logic;                                        -- clk
+			sdram_wire_addr                    : out   std_logic_vector(12 downto 0);                    -- addr
+			sdram_wire_ba                      : out   std_logic_vector(1 downto 0);                     -- ba
+			sdram_wire_cas_n                   : out   std_logic;                                        -- cas_n
+			sdram_wire_cke                     : out   std_logic;                                        -- cke
+			sdram_wire_cs_n                    : out   std_logic;                                        -- cs_n
+			sdram_wire_dq                      : inout std_logic_vector(15 downto 0) := (others => 'X'); -- dq
+			sdram_wire_dqm                     : out   std_logic_vector(1 downto 0);                     -- dqm
+			sdram_wire_ras_n                   : out   std_logic;                                        -- ras_n
+			sdram_wire_we_n                    : out   std_logic;                                        -- we_n
+			sw_export_export                   : in    std_logic_vector(9 downto 0)  := (others => 'X'); -- export
+			system_ref_clk_clk                 : in    std_logic                     := 'X';             -- clk
+			system_ref_reset_reset             : in    std_logic                     := 'X'              -- reset
+		);
+	end component lab4;
+

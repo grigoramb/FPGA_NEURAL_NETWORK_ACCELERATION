@@ -1,0 +1,108 @@
+# # File gsaved with Nlview version 6.3.8  2013-12-19 bk=1.2992 VDI=34 GEI=35
+# 
+preplace inst lab4.sys_sdram_pll_0 -pg 1 -lvl 1 -y 410
+preplace inst lab4 -pg 1 -lvl 1 -y 40 -regy -20
+preplace inst lab4.hps_0.clk_0 -pg 1
+preplace inst lab4.hps_0.L2 -pg 1
+preplace inst lab4.hps_0.fpga_interfaces -pg 1
+preplace inst lab4.hps_0.dma -pg 1
+preplace inst lab4.hps_0.gmac0 -pg 1
+preplace inst lab4.hps_0.gmac1 -pg 1
+preplace inst lab4.hps_0.fpgamgr -pg 1
+preplace inst lab4.layer1_mem -pg 1 -lvl 2 -y 770
+preplace inst lab4.hps_0.arm_a9_0 -pg 1
+preplace inst lab4.hps_0.l3regs -pg 1
+preplace inst lab4.hps_0.timer0 -pg 1
+preplace inst lab4.hps_0.arm_a9_1 -pg 1
+preplace inst lab4.hps_0.f2s_periph_ref_clk -pg 1
+preplace inst lab4.done -pg 1 -lvl 5 -y 130
+preplace inst lab4.SDRAM -pg 1 -lvl 5 -y 490
+preplace inst lab4.hps_0.sysmgr -pg 1
+preplace inst lab4.hps_0.timer1 -pg 1
+preplace inst lab4.jtag_uart_0 -pg 1 -lvl 3 -y 490
+preplace inst lab4.hps_0.bridges -pg 1
+preplace inst lab4.hps_0.timer2 -pg 1
+preplace inst lab4.hps_0.hps_io -pg 1
+preplace inst lab4.hps_0.timer3 -pg 1
+preplace inst lab4.hps_0.timer -pg 1
+preplace inst lab4.hps_0.qspi -pg 1
+preplace inst lab4.ready2 -pg 1 -lvl 5 -y 360
+preplace inst lab4.pll_0 -pg 1 -lvl 2 -y 210
+preplace inst lab4.hps_0.sdrctl -pg 1
+preplace inst lab4.layer1 -pg 1 -lvl 2 -y 340
+preplace inst lab4.hps_0.uart0 -pg 1
+preplace inst lab4.pll_1 -pg 1 -lvl 4 -y 590
+preplace inst lab4.hps_0.gpio0 -pg 1
+preplace inst lab4.hps_0.arm_gic_0 -pg 1
+preplace inst lab4.sys_sdram_pll_0.reset_from_locked -pg 1
+preplace inst lab4.hps_0.sdmmc -pg 1
+preplace inst lab4.layer2 -pg 1 -lvl 2 -y 610
+preplace inst lab4.hps_0.uart1 -pg 1
+preplace inst lab4.hps_0.gpio1 -pg 1
+preplace inst lab4.hps_0.gpio2 -pg 1
+preplace inst lab4.ready -pg 1 -lvl 5 -y 260
+preplace inst lab4.sys_sdram_pll_0.sys_pll -pg 1
+preplace inst lab4.alt_vip_vfr_0 -pg 1 -lvl 3 -y 270
+preplace inst lab4.hps_0.clkmgr -pg 1
+preplace inst lab4.hps_0 -pg 1 -lvl 4 -y 220
+preplace inst lab4.sw -pg 1 -lvl 3 -y 730
+preplace inst lab4.hps_0.i2c0 -pg 1
+preplace inst lab4.hps_0.usb0 -pg 1
+preplace inst lab4.hps_0.usb1 -pg 1
+preplace inst lab4.hps_0.axi_ocram -pg 1
+preplace inst lab4.hps_0.axi_sdram -pg 1
+preplace inst lab4.hps_0.i2c1 -pg 1
+preplace inst lab4.hps_0.i2c2 -pg 1
+preplace inst lab4.alt_vip_itc_0 -pg 1 -lvl 3 -y 30
+preplace inst lab4.hps_0.spim0 -pg 1
+preplace inst lab4.hps_0.rstmgr -pg 1
+preplace inst lab4.done2 -pg 1 -lvl 5 -y 30
+preplace inst lab4.hps_0.i2c3 -pg 1
+preplace inst lab4.hps_0.spim1 -pg 1
+preplace inst lab4.hps_0.f2s_sdram_ref_clk -pg 1
+preplace inst lab4.layer2_mem -pg 1 -lvl 2 -y 910
+preplace inst lab4.hps_0.hps_io.border -pg 1
+preplace inst lab4.hps_0.dcan0 -pg 1
+preplace inst lab4.hps_0.eosc1 -pg 1
+preplace inst lab4.hps_0.dcan1 -pg 1
+preplace inst lab4.hps_0.eosc2 -pg 1
+preplace inst lab4.hps_0.wd_timer0 -pg 1
+preplace inst lab4.hps_0.nand0 -pg 1
+preplace inst lab4.led -pg 1 -lvl 3 -y 870
+preplace inst lab4.hps_0.wd_timer1 -pg 1
+preplace inst lab4.sysid_qsys_0 -pg 1 -lvl 3 -y 650
+preplace netloc FAN_OUT<net_container>lab4</net_container>(SLAVE)SDRAM.reset,(SLAVE)layer2.reset,(SLAVE)sysid_qsys_0.reset,(SLAVE)layer2_mem.reset1,(SLAVE)layer1_mem.reset1,(SLAVE)ready.reset,(MASTER)sys_sdram_pll_0.reset_source,(SLAVE)done2.reset,(SLAVE)alt_vip_itc_0.is_clk_rst_reset,(SLAVE)jtag_uart_0.reset,(SLAVE)pll_0.reset,(SLAVE)alt_vip_vfr_0.clock_master_reset,(SLAVE)done.reset,(SLAVE)alt_vip_vfr_0.clock_reset_reset,(SLAVE)layer1.reset,(SLAVE)led.reset,(SLAVE)ready2.reset,(SLAVE)pll_1.reset,(SLAVE)sw.reset) 1 1 4 410 880 760 640 1300 500 1790
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)lab4.sw_export,(SLAVE)sw.external_connection) 1 0 3 NJ 760 NJ 760 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(MASTER)sys_sdram_pll_0.sdram_clk,(MASTER)lab4.sdram_clk) 1 1 5 NJ 490 NJ 480 NJ 480 NJ 480 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)lab4.s1_m2,(SLAVE)layer2_mem.s1) 1 0 2 NJ 960 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)done2.external_connection,(SLAVE)lab4.done2) 1 0 5 NJ 140 NJ 140 NJ 140 NJ 60 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)alt_vip_itc_0.clocked_video,(SLAVE)lab4.clocked_video_export) 1 0 3 NJ 40 NJ 30 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)layer1.s1_from_layer1,(SLAVE)lab4.s1_l1) 1 0 2 NJ 350 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)lab4.s2_l2,(SLAVE)layer2.s2_from_layer1) 1 0 2 NJ 700 NJ
+preplace netloc POINT_TO_POINT<net_container>lab4</net_container>(MASTER)alt_vip_vfr_0.avalon_master,(SLAVE)hps_0.f2h_axi_slave) 1 3 1 1240
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)SDRAM.wire,(SLAVE)lab4.sdram_wire) 1 0 5 NJ 600 NJ 600 NJ 600 NJ 520 NJ
+preplace netloc FAN_OUT<net_container>lab4</net_container>(SLAVE)jtag_uart_0.clk,(SLAVE)hps_0.h2f_lw_axi_clock,(SLAVE)sysid_qsys_0.clk,(SLAVE)SDRAM.clk,(SLAVE)layer2_mem.clk1,(SLAVE)pll_0.refclk,(SLAVE)done.clk,(SLAVE)layer1.clock,(SLAVE)led.clk,(SLAVE)done2.clk,(SLAVE)alt_vip_vfr_0.clock_master,(SLAVE)hps_0.f2h_axi_clock,(MASTER)sys_sdram_pll_0.sys_clk,(SLAVE)ready2.clk,(SLAVE)layer2.clock,(SLAVE)sw.clk,(SLAVE)layer1_mem.clk1,(SLAVE)pll_1.refclk,(SLAVE)hps_0.h2f_axi_clock,(SLAVE)ready.clk) 1 1 4 490 740 800 620 1260 400 1730
+preplace netloc EXPORT<net_container>lab4</net_container>(MASTER)hps_0.h2f_reset,(MASTER)lab4.hps_0_h2f_reset) 1 4 2 NJ 250 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)lab4.done_to_hps,(SLAVE)done.external_connection) 1 0 5 NJ 180 NJ 180 NJ 180 NJ 160 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)sys_sdram_pll_0.ref_reset,(SLAVE)lab4.system_ref_reset) 1 0 1 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)lab4.s2_l1,(SLAVE)layer1.s2_from_layer1) 1 0 2 NJ 370 NJ
+preplace netloc FAN_OUT<net_container>lab4</net_container>(SLAVE)alt_vip_vfr_0.clock_reset,(MASTER)pll_0.outclk0,(SLAVE)alt_vip_itc_0.is_clk_rst) 1 2 1 780
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)ready2.external_connection,(SLAVE)lab4.ready2) 1 0 5 NJ 310 NJ 330 NJ 420 NJ 420 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(MASTER)lab4.clk_65,(MASTER)pll_1.outclk0) 1 4 2 NJ 620 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)layer1.control,(SLAVE)lab4.layer1_control) 1 0 2 NJ 330 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)lab4.s1_m1,(SLAVE)layer1_mem.s1) 1 0 2 NJ 820 NJ
+preplace netloc POINT_TO_POINT<net_container>lab4</net_container>(SLAVE)jtag_uart_0.irq,(MASTER)hps_0.f2h_irq0) 1 2 3 840 460 NJ 460 1650
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)lab4.hps_io,(SLAVE)hps_0.hps_io) 1 0 4 NJ 200 NJ 200 NJ 200 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)lab4.led_export,(SLAVE)led.external_connection) 1 0 3 NJ 900 NJ 900 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)layer2_mem.s2,(SLAVE)lab4.s2_m2) 1 0 2 NJ 980 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)lab4.s1_l2,(SLAVE)layer2.s1_from_layer1) 1 0 2 NJ 680 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)sys_sdram_pll_0.ref_clk,(SLAVE)lab4.system_ref_clk) 1 0 1 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)lab4.ready_from_hps,(SLAVE)ready.external_connection) 1 0 5 NJ 160 NJ 160 NJ 160 NJ 140 NJ
+preplace netloc FAN_OUT<net_container>lab4</net_container>(SLAVE)alt_vip_vfr_0.avalon_slave,(SLAVE)done.s1,(SLAVE)ready.s1,(SLAVE)jtag_uart_0.avalon_jtag_slave,(SLAVE)sysid_qsys_0.control_slave,(SLAVE)led.s1,(MASTER)hps_0.h2f_lw_axi_master,(SLAVE)sw.s1,(SLAVE)ready2.s1,(SLAVE)done2.s1) 1 2 3 820 220 NJ 180 1770
+preplace netloc POINT_TO_POINT<net_container>lab4</net_container>(SLAVE)alt_vip_itc_0.din,(MASTER)alt_vip_vfr_0.avalon_streaming_source) 1 2 2 840 240 1160
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)layer2.control,(SLAVE)lab4.layer2_control) 1 0 2 NJ 640 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)lab4.memory,(SLAVE)hps_0.memory) 1 0 4 NJ 290 NJ 300 NJ 260 NJ
+preplace netloc EXPORT<net_container>lab4</net_container>(SLAVE)layer1_mem.s2,(SLAVE)lab4.s2_m1) 1 0 2 NJ 840 NJ
+preplace netloc FAN_IN<net_container>lab4</net_container>(MASTER)hps_0.h2f_axi_master,(MASTER)layer1.avalon_master,(SLAVE)SDRAM.s1) 1 2 3 720 440 NJ 440 1670
+levelinfo -pg 1 0 140 2100
+levelinfo -hier lab4 150 230 560 890 1460 1820 1970

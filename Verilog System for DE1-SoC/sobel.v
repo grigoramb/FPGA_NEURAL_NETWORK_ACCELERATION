@@ -1,0 +1,275 @@
+`define SDRAM_BASE 32'h0
+`define IDLE 0      
+`define LDR 1      
+`define SHIFT 2     
+`define WRITE 3      
+`define DONE 4
+`define DEBUG 5
+
+module sobel (
+input clk,
+input reset_n,
+input waitrequest,
+input readdatavalid,
+input [15:0] readdata,
+output reg read_n = 1'b1,
+output reg write_n = 1'b1,
+output reg chipselect = 1'b1,
+output reg [31:0] address = `SDRAM_BASE,
+output reg [1:0] byteenable = 2'b11,
+output [15:0] writedata,
+// control signals
+input ready,
+output done,
+// debugging
+output reg [2:0] state = 3'h0,
+input cont
+//input man_rst_n
+);
+
+assign done = (state == `DONE);
+//wire rst;
+//assign rst = ~man_rst_n | ~reset_n;
+
+
+// how many pairs of pixels have been written
+reg [7:0] writes = 0;  // at 255, pipeline is filled, only need to load R3 each time
+
+// per 6 pixels loaded
+reg [4:0] loaded = 0; // at 18 all rows have valid data.
+reg [1:0] valid = 0; // how many rows are valid
+reg shifted = 0; // number of times shifted in the shift state
+reg [1:0] adrsent = 0;
+
+reg [31:0] rdaddr = `SDRAM_BASE;
+reg [31:0] wraddr = `SDRAM_BASE + 32'h20000; //h20000 = 512 rows * 256 reads (2 pixels per read)
+
+
+reg [0:4095] row1; // 512 pixels 
+reg [0:4095] row2; // 512 pixels
+reg [0:47] row3; // only need 6 pixels
+
+reg signed [10:0] Dx1,Dx2,Dy1,Dy2, D1,D2;
+reg [0:15] abs_D;
+
+reg [9:0] rowswritten = 0; 
+
+assign writedata = abs_D;
+
+// state logic for reading and writing
+always @(posedge clk) begin
+	if(~reset_n) begin
+		state <= `IDLE;
+		shifted <= 0;
+		valid <= 0;
+		loaded <= 0;
+		writes <= 0;
+		rdaddr <= 0;
+		wraddr <= 32'h40000;
+		adrsent <= 0;
+		row1 <= 0;
+		row2 <= 0;
+		row3 <= 0;
+		rowswritten <= 0;
+	end
+	else begin
+		case(state)
+			`IDLE: begin
+					state <= ready ? `LDR : `IDLE;
+					shifted <= 0;
+					valid <= 0;
+					loaded <= 0;
+					writes <= 0;
+					rdaddr <= 0;
+					wraddr <= 32'h40000;
+					adrsent <= 0;
+					row1 <= 0;
+					row2 <= 0;
+					row3 <= 0;
+					rowswritten <= 0;
+					abs_D <= 0;
+			end
+			`LDR: begin
+					state <= (valid == 3) ? `SHIFT : `LDR;
+					if(readdatavalid) begin
+						valid <= (valid < 3) ? valid + 1 : valid;
+						loaded <= (loaded < 18) ? loaded + 2 : loaded;
+						case(valid)
+							0: row1[32:47] <= readdata;
+							1: row2[32:47] <= readdata;
+							2: row3[32:47] <= readdata;
+							default : begin
+								row1[32:47] <= row1[32:47];
+								row2[32:47] <= row2[32:47];
+								row3[32:47] <= row3[32:47];
+							end
+						endcase
+					end
+					else begin
+						valid <= valid;
+						loaded <= loaded;
+						{row1[0:31], row1[48:4095]} <= {row1[0:31], row1[48:4095]};
+						{row2[0:31], row2[48:4095]} <= {row2[0:31], row2[48:4095]};
+						row3[0:31] <= row3[0:31];
+					end
+					shifted <= shifted;
+					writes <= writes;
+					rdaddr <= (~waitrequest && adrsent < 3) ? rdaddr + 1 : rdaddr;
+					wraddr <= wraddr;
+					adrsent <= (~waitrequest && adrsent < 3) ? adrsent + 1: adrsent;
+					rowswritten <= rowswritten;
+					abs_D <= abs_D;
+			end
+	
+			`SHIFT: begin
+					state <= ~shifted ? `SHIFT : (loaded < 18) || (writes == 255) ? `LDR : `WRITE; // at end of row do extra load
+					shifted <= ~shifted;
+					valid <= (rowswritten == 0) ? 0 : 2;
+					loaded <= loaded;
+					writes <= (writes == 255) ? 0 : writes;
+					rdaddr <= rdaddr;
+					wraddr <= wraddr;
+					adrsent <= (rowswritten == 0) ? 0 : 2;
+
+					//abs_D[0:15] = {abs_D[0:7]+1,abs_D[8:15]+1};
+
+					D1 = abs(Dx1) + abs(Dy1);
+					D2 = abs(Dx2) + abs(Dy2);
+					abs_D <= {D1[10:3],D2[10:3]};
+					Dx1 <= 	-  $signed({3'b000,row1[0:7]})		// -1*O[-1][-1]
+						+  $signed({3'b000,row1[16:23]})	// +1*O[-1][+1]
+						- ($signed({3'b000,row2[0:7]}) << 1) 	// -2*O[0][-1]
+						+ ($signed({3'b000,row2[16:23]}) << 1)	// +2*O[0][+1]
+						-  $signed({3'b000,row3[0:7]})		// -1*O[-1][-1]
+						+  $signed({3'b000,row3[16:23]});	// +1*O[-1][+1]
+
+					Dy1 <=	   $signed({3'b000,row1[0:7]})		// +1*O[-1][-1]
+						+ ($signed({3'b000,row1[8:15]}) << 1)	// +2*O[-1][0]
+						+  $signed({3'b000,row1[16:23]})	// +1*O[-1][+1]
+						-  $signed({3'b000,row3[0:7]})		// -1*O[+1][-1]
+						- ($signed({3'b000,row3[8:15]}) << 1)	// -2*O[+1][0]
+						-  $signed({3'b000,row3[16:23]});	// -1*O[+1][+1]
+
+					Dx2 <= 	-  $signed({3'b000,row1[8:15]})		// -1*O[-1][-1]
+						+  $signed({3'b000,row1[24:31]})	// +1*O[-1][+1]
+						- ($signed({3'b000,row2[8:15]}) << 1) 	// -2*O[0][-1]
+						+ ($signed({3'b000,row2[24:31]}) << 1)	// +2*O[0][+1]
+						-  $signed({3'b000,row3[8:15]})		// -1*O[-1][-1]
+						+  $signed({3'b000,row3[24:31]});	// +1*O[-1][+1]
+
+					Dy2 <=	   $signed({3'b000,row1[8:15]})		// +1*O[-1][-1]
+						+ ($signed({3'b000,row1[16:23]}) << 1)	// +2*O[-1][0]
+						+  $signed({3'b000,row1[24:31]})	// +1*O[-1][+1]
+						-  $signed({3'b000,row3[8:15]})		// -1*O[+1][-1]
+						- ($signed({3'b000,row3[16:23]}) << 1)	// -2*O[+1][0]
+						-  $signed({3'b000,row3[24:31]});	// -1*O[+1][+1]
+
+					row1 <= {row1[8:4095],row2[0:7]};
+					row2 <= {row2[8:4095],row3[0:7]};
+					row3 <= {row3[8:47],8'b0};
+					rowswritten <= rowswritten;
+					//abs_D <= abs_D;
+
+			end
+			
+			`WRITE: begin
+					state <= ~waitrequest ? `DEBUG : `WRITE;
+					shifted <= shifted;
+					valid <= valid;
+					loaded <= loaded;
+					writes <= (~waitrequest) ? writes + 1 : writes;
+					rdaddr <= rdaddr;
+					wraddr <= (~waitrequest) ? wraddr + 1 : wraddr;
+					adrsent <= adrsent;
+					row1 <= row1;
+					row2 <= row2;
+					row3 <= row3;
+					rowswritten <= (~waitrequest && writes == 254) ? rowswritten + 1: rowswritten;
+					abs_D <= abs_D;
+			end
+			`DEBUG: begin
+					state <= ~cont ? `DEBUG : (rowswritten == 1022) ? `DONE : `LDR;
+					shifted <= shifted;
+					valid <= (rowswritten == 0) ? 0 : 2; // read 3 at a time until a full row written, then buffer is full
+					loaded <= loaded;
+					writes <= writes;
+					rdaddr <= rdaddr;
+					wraddr <= wraddr;
+					adrsent <= adrsent;
+					row1 <= row1;
+					row2 <= row2;
+					row3 <= row3;
+					rowswritten <= rowswritten;
+					abs_D <= abs_D;
+			end
+			`DONE: begin
+					state <= ~ready ? `IDLE : `DONE;
+					shifted <= 0;
+					valid <= 0;
+					loaded <= 0;
+					writes <= 0;
+					rdaddr <= 0;
+					wraddr <= 32'h40000;
+					adrsent <= 0;
+					row1 <= 0;
+					row2 <= 0;
+					row3 <= 0;	
+					rowswritten <= 0;		
+					abs_D <= abs_D;
+			end
+			default: begin
+					state <= ready ? `LDR : `IDLE;
+					shifted <= 0;
+					valid <= 0;
+					loaded <= 0;
+					writes <= 0;
+					rdaddr <= 0;
+					wraddr <= 32'h40000;
+					adrsent <= 0;
+					row1 <= 0;
+					row2 <= 0;
+					row3 <= 0;
+					rowswritten <= 0;
+					abs_D <= abs_D;
+			end
+		endcase
+	end
+end
+
+always @(*) begin
+	byteenable <= 2'b11;
+	chipselect <= 1;
+	case (state)
+		`IDLE: begin
+			write_n <= 1;
+			read_n <= 1;
+			address <= `SDRAM_BASE;
+		end
+		`LDR: begin
+			write_n <= 1;
+			read_n <= adrsent < 3 ? 0 : 1;
+			address <= rdaddr;
+		end
+		`WRITE: begin
+			write_n <= 0;
+			read_n <= 1;
+			address <= wraddr;
+		end
+		// Includes SHIFT, DONE, and DEBUG states
+		default: begin
+			write_n <= 1;
+			read_n <= 1;					
+			address <= 0;
+		end
+
+	endcase
+			
+			
+end		
+
+
+function [10:0] abs (input signed [10:0] x);
+	abs = x >= 0 ? x : -x;
+endfunction			
+				
+endmodule

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><altera_monitor_program_project version="1.0">
+    <architecture>ARM Cortex-A9</architecture>
+    <system>
+        <system_info filepath="true">lab4.sopcinfo</system_info>
+        <system_sof filepath="true">output_files/lab4.sof</system_sof>
+        <system_jdi filepath="true"/>
+        <cable>DE-SoC [3-2]</cable>
+        <processor>hps_0_arm_a9_0</processor>
+        <reset_processor_during_load>true</reset_processor_during_load>
+        <terminal>Semihosting</terminal>
+    </system>
+    <program>
+        <type>No Program</type>
+    </program>
+</altera_monitor_program_project>

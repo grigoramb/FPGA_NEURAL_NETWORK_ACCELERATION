@@ -1,0 +1,182 @@
+`define SDRAM_BASE 32'h0
+`define IDLE 0      
+`define LDR 1      
+`define SHIFT 2     
+`define WRITE 3      
+`define DONE 4
+`define DEBUG 5
+
+module layer1 (
+input clk,
+input reset_n,
+input waitrequest,
+input readdatavalid,
+input [15:0] readdata,
+output reg read_n = 1'b1,
+output reg write_n = 1'b1,
+output reg chipselect = 1'b1,
+output reg [31:0] address = `SDRAM_BASE,
+output reg [1:0] byteenable = 2'b11,
+output [15:0] writedata,
+// control signals
+input ready,
+output done,
+// debugging
+output reg [2:0] state = 3'h0
+//input man_rst_n
+);
+
+assign done = (state == `DONE);
+//wire rst;
+//assign rst = ~man_rst_n | ~reset_n;
+
+
+
+
+reg	[8:0]  address_a = 0;
+reg	[8:0]  address_b = 1;
+wire	[7:0]  data_a;
+wire	[7:0]  data_b;
+wire	  rden_a;
+wire	  rden_b;
+wire	  wren_a;
+wire	  wren_b;
+wire	[7:0]  q_a; // output from W0 - port 1
+wire	[7:0]  q_b; // output from W0 - port 2
+
+//	input	[8:0]  address_a;
+//	input	[8:0]  address_b;
+//	input	[7:0]  data_a;
+//	input	[7:0]  data_b;
+//	input	  rden_a;
+//	input	  rden_b;
+//	input	  wren_a;
+//	input	  wren_b;
+//	output	[7:0]  q_a;
+//	output	[7:0]  q_b;
+
+bram W0(
+   address_a,
+	address_b,
+	clk,
+	data_a, // data in
+	data_b,
+	rden_a,
+	rden_b,
+	wren_a,
+	wren_b,
+	q_a, // data out
+	q_b);
+
+
+
+reg [7:0] writes = 0;  
+
+reg [7:0] loaded = 0;
+reg [7:0] adrsent = 0;
+
+reg [31:0] rdaddr = `SDRAM_BASE;
+reg [31:0] wraddr = `SDRAM_BASE + 32'd180; //h20000 = 512 rows * 256 reads (2 pixels per read)
+
+assign writedata = {q_a,q_b};
+assign {data_a,data_b} = readdata;
+assign rden_a = (state == `WRITE);
+assign rden_b = (state == `WRITE);
+assign wren_a = (state == `LDR);
+assign wren_b = (state == `LDR);
+
+// state logic for reading and writing
+always @(posedge clk) begin
+	if(~reset_n) begin
+		state <= `IDLE;
+		loaded <= 0;
+		writes <= 0;
+		rdaddr <= 0;
+		wraddr <= 32'd180;
+		adrsent <= 0;
+		address_a <= 0;
+		address_b <= 1;
+	end
+	else begin
+		case(state)
+			`IDLE: begin
+					state <= ready ? `LDR : `IDLE;
+					loaded <= 0;
+					writes <= 0;
+					rdaddr <= 0;
+					wraddr <= 32'd180;
+					adrsent <= 0;
+					address_a <= 0;
+					address_b <= 1;
+			end
+			`LDR: begin
+					state <= (loaded == 180) ? `WRITE : `LDR;
+					loaded <= (loaded < 180) && readdatavalid ? loaded + 1 : loaded;
+					writes <= writes;
+					rdaddr <= (~waitrequest && adrsent < 180) ? rdaddr + 1 : rdaddr;
+					wraddr <= wraddr;
+					adrsent <= (~waitrequest && adrsent < 180) ? adrsent + 1: adrsent;
+					address_a <= loaded*2;
+					address_b <= loaded*2 + 1;
+			end
+			`WRITE: begin
+					state <= (writes == 180) ? `DONE: `WRITE;
+					loaded <= loaded;
+					writes <= (~waitrequest && writes < 180) ? writes + 1 : writes;
+					rdaddr <= rdaddr;
+					wraddr <= (~waitrequest&& writes < 180) ? wraddr + 1 : wraddr;
+					adrsent <= adrsent;
+					address_a <= writes*2;
+					address_b <= writes*2 + 1;
+			end
+			`DONE: begin
+					state <= ~ready ? `IDLE : `DONE;
+					loaded <= 0;
+					writes <= 0;
+					rdaddr <= 0;
+					wraddr <= 32'd180;
+					adrsent <= 0;
+			end
+			default: begin
+					state <= ready ? `LDR : `IDLE;
+					loaded <= 0;
+					writes <= 0;
+					rdaddr <= 0;
+					wraddr <= 32'd180;
+					adrsent <= 0;
+			end
+		endcase
+	end
+end
+
+always @(*) begin
+	byteenable <= 2'b11;
+	chipselect <= 1;
+	case (state)
+		`IDLE: begin
+			write_n <= 1;
+			read_n <= 1;
+			address <= `SDRAM_BASE;
+		end
+		`LDR: begin
+			write_n <= 1;
+			read_n <= adrsent < 180 ? 0 : 1;
+			address <= rdaddr;
+		end
+		`WRITE: begin
+			write_n <= 0;
+			read_n <= 1;
+			address <= wraddr;
+		end
+		// Includes SHIFT, DONE, and DEBUG states
+		default: begin
+			write_n <= 1;
+			read_n <= 1;					
+			address <= 0;
+		end
+	endcase
+			
+			
+end		
+
+endmodule
